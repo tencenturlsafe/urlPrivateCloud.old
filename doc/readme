@@ -1,0 +1,10 @@
+SDK用于本地检测url的恶意类型，更新进程提供本地更新和在线更新两种方式，匹配进程通过共享内存获取更新进程更新的库文件数据。
+SDK只提供liburl_cloud64.a（liburl_cloud64.so）库，64位，同时依赖于libcrypto和libcurl两个开源库，其中libcurl由于动态依赖于glibc，
+因此需要对应的glibc版本支持，测试glic2.12版本使用没问题。若编译demo出错，可自行下载开源代码编译安装libcrypto和libcurl开源库。
+
+demo/ 目录下为示例代码，其中online_update.c为在线更新库文件示例代码，使用此demo，需确保服务器可联网；local_update.c为离线更新库文件示例代码，使用此demo，
+		需建立VPN双向通道；url_match.c为url安全检测示例代码。
+include/ 目录下urllibhandler.h为SDK提供的接口。
+lib/ 目录下为SDK提供的64位静态库和动态库，其中libcrypto.a与libcurl.a为SDK依赖的开源库，若与服务器版本不兼容，可自行下载编译安装。
+tool/ 为提供的工具，其中getInfo生成校验信息，用于获取认证文件licence.conf；memDetection用于检测当前共享内存使用情况。
+doc/ 目录下EvilTypes.xls为恶意类型小类介绍，reCode.txt为接口错误码介绍，Type2Class.txt为小类->大类映射文件，大类八大类信息可参考https://www.urlsec.qq.com/eviltype.html
