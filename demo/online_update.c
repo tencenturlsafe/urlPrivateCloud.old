@@ -31,7 +31,7 @@ int main()
         {
             printf("UrlLibUpgrade Failed, ErrCode: %#x\n", iErrCode);
             //请求频率过快,建议下次请求时间
-            if(iErrCode == 0){
+            if(iErrCode == 0x14){
                 sleep(uiNextTime);
                 continue;
             }else{
