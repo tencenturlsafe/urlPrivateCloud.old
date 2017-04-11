@@ -3,24 +3,26 @@ liburl_cloud64.a（liburl_cloud64.so）库接口返回码iErrCode说明
 函数名称：
 bool UrlLibInitByMb(uint32_t uiShmkey,uint32_t uiMbSize,const char * szConFile,int *iErrCode);
 bool UrlLibInit(uint32_t uiShmKey,uint32_t uiHashTableMaxCnt,const char * szConFile,int *iErrCode);
-返回false时，iErrCode值说明：
-0x01	请确保有足够的内存空间
-0x02	uiHashTableMaxCnt过小，(默认20*500)
-0x05	请确认对证书licence.conf具有可读权限
-0x06	证书licence.conf信息缺失
-0x07	证书licence.conf和本服务器不匹配（一一对应）
-0x08	证书licence.conf数据损坏
+返回false时，iErrCode值说明:
+0x01	请确认对证书licence.conf具有可读权限
+0x02	证书licence.conf信息缺失
+0x03	获取本机MAC地址失败
+0x04	证书licence.conf和本服务器不匹配（一一对应）
 0x0a	证书licence.conf过期
-//如果设置了logPath，则写系统日志文件
-0x0b	未正确配置logPath选项
+
 //设置了typeConvFile，且加载evilTypes到evilClass映射数据失败
-0x0d	未正确配置typeConvFile选项
+0x05	未正确配置typeConvFile选项
+0x06	ConvFile文件内容有误
+
+0x07	创建共享内存失败(错误码请查看系统日志logPath)
+0x08	设置的记录条数少于MAX_HASH_TIME(默认20)*500
+
 
 函数名：
 bool UrlLibUpgrade(const char * szTmpFilePath,unsigned int *uiInsertDataCnt,int * iErrCode,unsigned int * uiNextTime);
 返回false时，iErrCode值说明：
 0x0a	证书licence.conf过期
-0x11	DNS解析失败
+0x11	DNS解析失败(错误码请查看系统日志logPath)
 0x14	更新请求频率过快，建议休眠*uiNextTime秒
 0x17	对参数szTmpFilePath所指路径文件不具有读/写权限
 0x1a、0x1b	更新数据到共享内存失败，内存已满，请扩展内存空间
@@ -33,12 +35,12 @@ bool UrlLibLoad(const char * szFileDir,unsigned int * puiLoad,int * iErrCode,boo
 0x22	校验文件损坏且重建失败
 0x23	确认对szFileDir目录是否具有读/写权限
 0x24	确认对加载的文件是否具有读/写权限
-0x26	加载文件名称格式错误
-0x27	加载文件名称及数据内容校验失败
-0x28	加载文件数量超过限制（默认4096）
-0x29、0x2a	更新数据到共享内存失败，内存已满，请扩展内存空间
+0x25	加载文件名称格式错误
+0x26	加载文件校验失败，请确认是否修改内容
+0x27	加载文件数量超过限制（默认4096）
+0x1a、0x1b	更新数据到共享内存失败，内存已满，请扩展内存空间
 0x2b	更新本地校验文件失败
-ox2f	增量文件合并失败
+ox2a、0x2b	增量文件合并失败
 
 函数名：
 int InsertUserDefineEle(const char * szUrl,unsigned int uiLevel,unsigned int uiUrlType);
@@ -61,9 +63,9 @@ int DeleteUserDefineEle(const char * szUrl,unsigned int uiLevel);
 int UrlLibDetect(const char * szUrl,unsigned int * uiUrlType,unsigned int uiEvilType,unsigned int * uiLevel,char * szParameter);
 返回值说明：
 0x00	匹配成功
-0x52	匹配的url状态未知
 0x0a	licence.conf证书过期
 0x51	库文件超过七天未更新
+0x52	匹配的url状态未知
 
 函数名：
 int convType2Class(unsigned int uiEvilType,unsigned int * uiEvilClass);

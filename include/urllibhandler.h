@@ -10,7 +10,7 @@ typedef enum
     URL_TYPE_BLACK = 2,
     URL_TYPE_WHITE_NO_QQ = 3,
     URL_TYPE_WHITE_QQ = 4
-}E_URL_TYPE;
+} E_URL_TYPE;
 
 typedef enum
 {
@@ -19,7 +19,7 @@ typedef enum
     URL_LEVEL_PATH = 3,  // mail.qq.com/cgi-bin
     URL_LEVEL_HOST = 4,  // mail.qq.com
     URL_LEVEL_DOMAIN = 5 // qq.com
-}E_URL_LEVEL;
+} E_URL_LEVEL;
 
 
  /**
