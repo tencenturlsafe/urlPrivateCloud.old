@@ -42,23 +42,6 @@ bool UrlLibLoad(const char * szFileDir,unsigned int * puiLoad,int * iErrCode,boo
 0x2b	更新本地校验文件失败
 ox2a、0x2b	增量文件合并失败
 
-函数名：
-int InsertUserDefineEle(const char * szUrl,unsigned int uiLevel,unsigned int uiUrlType);
-返回值说明：
-0x00	插入数据成功
-0x31	输入的szUrl有误
-0x32	输入的uiLevel不在处理范围
-0x33	输入的uiUrlType不在处理范围
-0x34	插入数据到共享内存失败(内存已满)
-
-函数名：
-int DeleteUserDefineEle(const char * szUrl,unsigned int uiLevel);
-返回值说明：
-0x00	删除数据成功
-0x41	输入的szUrl有误
-0x42	输入的uiLevel不在处理范围
-0x43	从共享内存删除数据失败(数据不存在)
-
 函数名:
 int UrlLibDetect(const char * szUrl,unsigned int * uiUrlType,unsigned int uiEvilType,unsigned int * uiLevel,char * szParameter);
 返回值说明：
@@ -73,3 +56,31 @@ int convType2Class(unsigned int uiEvilType,unsigned int * uiEvilClass);
 0x00	小类->大类转换成功
 0x61	小类不存在对应的大类（映射关系未加载）
 0x62	未正确配置typeConvFile选项
+
+函数名：
+bool UserDefineInit(uint32_t uiShmKey, uint32_t uiHashTableMaxCnt,int * iErrCode);
+返回false时，iErrCode值说明：
+0x07	创建共享内存失败(错误码请查看系统日志logPath)
+0x08	设置的记录条数少于MAX_HASH_TIME(默认20)*500
+
+
+函数名：
+int InsertUserDefineEle(const char * szUrl,unsigned int uiLevel,unsigned int uiUrlType);
+返回值说明：
+0x00	插入数据成功
+0x31	输入的szUrl有误
+0x32	输入的uiLevel不在处理范围，请参考E_URL_LEVEL
+0x33	输入的uiUrlType不在处理范围，请参考E_URL_TYPE
+
+函数名：
+int DeleteUserDefineEle(const char * szUrl,unsigned int uiLevel);
+返回值说明：
+0x00	删除数据成功
+0x41	输入的szUrl有误
+0x42	输入的uiLevel不在处理范围，请参考E_URL_LEVEL
+0x43	从共享内存删除数据失败(数据不存在)
+
+unsigned int UrlLibDetectUserDefine(const char * szUrl,unsigned int * uiLevel);
+返回值说明：
+0		szUrl在用户自定义数据中匹配失败
+其他值	请参考E_URL_TYPE，*uiLevel请参考E_URL_LEVEL

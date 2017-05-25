@@ -62,6 +62,19 @@ bool UrlLibInitByMb(uint32_t uiShmKey, uint32_t uiMbSize,const char * szConfFile
 bool UrlLibUpgrade(const char * szTmpFilePath,unsigned int *uiInsertDataCnt,int *iErrCode,unsigned int * uiNextTime);
 
  /**
+  * @brief Used to load offline file (dowbloaded from join.urlsec.qq.com) into Urllib
+  * @details
+  *
+  * @param szFileName File's Location to be load
+  * @param uiLoadCnt Sucessed Load Count of the File
+  * @param iErrCode Error Code if UrlLibLoad failed
+  * @param bClearBeforeLoad Flag of data reset
+  *
+  * @return true: successfully load. false: fail load.
+  */
+bool UrlLibLoad(const char * szFileDir,unsigned int *uiLoadCnt,int *iErrCode ,bool bClearBeforeLoad);
+
+ /**
   * @brief  Check Url's Status with Eviltype
   * @details
   *
@@ -78,27 +91,6 @@ bool UrlLibUpgrade(const char * szTmpFilePath,unsigned int *uiInsertDataCnt,int 
   */
 int UrlLibDetect(const char * szUrl,unsigned int * uiUrlType,unsigned int * uiEvilType, unsigned int * uiLevel,char * szParameter);
 
-
- /**
-  * @brief Clear whole UrlLib
-  * @details All data (both tencent's data and user define data)
-  *         will be cleared when this api is invoked
-  */
-void UrlLibClear();
-
- /**
-  * @brief Used to load offline file (dowbloaded from join.urlsec.qq.com) into Urllib
-  * @details
-  *
-  * @param szFileName File's Location to be load
-  * @param uiLoadCnt Sucessed Load Count of the File
-  * @param iErrCode Error Code if UrlLibLoad failed
-  * @param bClearBeforeLoad Flag of data reset
-  *
-  * @return true: successfully load. false: fail load.
-  */
-bool UrlLibLoad(const char * szFileDir,unsigned int *uiLoadCnt,int *iErrCode ,bool bClearBeforeLoad);
-
  /**
   * @brief Conversion EvilType to EvilClass
   * @details
@@ -112,18 +104,41 @@ bool UrlLibLoad(const char * szFileDir,unsigned int *uiLoadCnt,int *iErrCode ,bo
   */
 int convType2Class(unsigned int uiEvilType,unsigned int * uiEvilClass);
 
+ /**
+  * @brief Clear Tencent or User UrlLib
+  * 
+  * @param index 0 for Tencent UrlLib; 1 for User UrlLib
+  * 
+  * @details both tencent's data and user define data can be cleared
+  *         when this api is invoked
+  */
+void UrlLibClear(unsigned short index);
+
 /**
  * @brief Show UrlLib memory use
- * @details
+ * 
+ * @param index 0 for Tencent UrlLib; 1 for User UrlLib
+ * 
  * @return percentage of memory used for diagnose purpose
  */
-int UrlLibShowUse();
+int UrlLibShowUse(unsigned short index);
+
+
+ /**
+  * @brief Init UrlLib by Number of Records
+  * @details
+  *
+  * @param uiShmKey shared memory's key to identify user define url lib(Can not be the same as UrlLibInit() or UrlLibInitByMb() uiShmKey)
+  * @param uiHashTableMaxCnt user define urllib's cnt (minimum count is 20*500)
+  * @param iErrCode error code if init failed
+  * 
+  * @return true: successfully init. false: fail init.
+  */
+bool UserDefineInit(uint32_t uiShmKey, uint32_t uiHashTableMaxCnt,int *iErrCode);
 
  /**
   * @brief Insert User Define Elements into UrlLib
-  * @details Elements will be formated in tencent manners and inserted intto tencent url lib.
-  *          User-defined data will be stored in hashtable same as tencent’s
-  *          User-defined data will be deleted when UrlLibDelete executed.
+  * @details Elements will be formated in tencent manners and inserted intto User url lib
   *          User-defined data will only be matched with UrlLibDetectUserDefine API
   *
   * @param szUrl url to be inserted
@@ -134,8 +149,8 @@ int UrlLibShowUse();
   *         0x31: bad szUrl
   *         0x32: bad uiLevel
   *         0x33: bad uiUrlType
-  *         0x34: memory full
   */
+
 int InsertUserDefineEle(const char * szUrl, unsigned int uiLevel, unsigned int uiUrlType);
 
  /**
@@ -148,19 +163,28 @@ int InsertUserDefineEle(const char * szUrl, unsigned int uiLevel, unsigned int u
   * @return   0x00: delete success
   *          0x41: bad szUrl
   *          0x42: bad uiLevel
-  *          0x43: deleted fail, the elements is already deleted
+  *          0x43: deleted fail, the elements does not existed
   */
+
 int DeleteUserDefineEle(const char * szUrl, unsigned int uiLevel);
 
  /**
-  * @brief Check Url's Status with Eviltype
+  * @brief  Check Url's Status with Eviltype
   * @details
   *
-  * @param szUrl: url to check
-  * @param int uiLevel: Url's evil level when url is black, Refer E_URL_LEVEL above
-  *
-  * @return UrlType Ref E_URL_TYPE above
+  * @param szUrl url for check
+  * @param uiUrlType: urltype of url, refer E_URL_TYPE above
+  * @param uiEviltype: Url's eviltype when url is black, refer docs;
+  *                     if just match userDefine data, uiEviltype is 0
+  * @param uiLevel: Url's evil level when url is black, Refer E_URL_LEVEL above
+  * @param szParameter: if black url take this parameter, will return unknown;
+  *                         if just match userDefine data, do not set up szParameter
+  * 
+  * @return 0x0a：licence.conf expired,just match userDefine data
+  *          0x51: the library is not updated more than seven days, userDefine data
+  *          0x52: the url status is unknown
+  *          0x00: detect successful
   */
-unsigned int UrlLibDetectUserDefine(const char * szUrl, unsigned int * uiLevel);
+int UrlLibDetectWithUserDefine(const char * szUrl,unsigned int * uiUrlType,unsigned int * uiEvilType, unsigned int * uiLevel,char * szParameter);
 
 #endif
